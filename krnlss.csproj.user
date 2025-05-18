@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup />
+  <ItemGroup>
+    <Compile Update="Controls\CustomTabControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="Controls\MonacoCustomTabControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="krnlss\About.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="krnlss\Games.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="krnlss\krnl.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="krnlss\krnl_monaco.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="krnlss\settings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="SirhurtUI.Controls\TabPanelControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="ToggleSliderControl\ToggleSlider.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="ToggleSlider\ToggleSliderComponent.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+  </ItemGroup>
+</Project>
