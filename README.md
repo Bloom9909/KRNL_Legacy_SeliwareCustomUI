@@ -9,7 +9,7 @@ Changelog:
 
 [+] Added Monaco
 
-[+] Added some checks(IsRobloxOpened, IsSeliwareInjected, and so on)
+[+] Added some checks(IsRobloxOpened, IsSeliwareInjected, etc)
 
 [+] Changed "wearedevs.net" to "seliware.com"
 
