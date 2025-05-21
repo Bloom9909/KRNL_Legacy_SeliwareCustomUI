@@ -34,4 +34,4 @@ Fixes:
 
 [/] Fixed "Install Roblox from Microsoft Store" error
 
-# If you find any errors dm meowbloom2on discord
+# If you found any errors, feel free to dm meowbloom2on discord
