@@ -516,9 +516,9 @@ public class CustomTabControl : TabControl
 		Scintilla scintilla = (Scintilla)sender;
 		int length = scintilla.Lines.Count.ToString().Length;
 		scintilla.Margins[0].Width = scintilla.TextWidth(10, new string('9', length + 1)) + 2;
-	}
+    }
 
-	public void addnewtab()
+    public void addnewtab()
 	{
 		int index = base.TabCount - 1;
 		base.TabPages.Insert(index, $"Script{base.TabCount}.lua");
@@ -526,7 +526,37 @@ public class CustomTabControl : TabControl
 		base.SelectedIndex = index;
 	}
 
-	public Scintilla GetWorkingTextEditor()
+    /*public void addnewtab()
+    {
+        TabPage newPage = new TabPage($"Script{base.TabCount + 1}.lua");
+		newPage.Controls.Add(NewEditor(""));
+        base.TabPages.Add(newPage);
+        base.SelectedIndex = base.TabCount - 1;
+    }*/
+
+    /*public void addnewtab()
+    {
+        string tabName = $"Script{base.TabCount}.lua";
+
+        TabPage newPage = new TabPage(tabName);
+        newPage.Controls.Add(NewEditor(""));
+		int insertAtIndex;
+		if (base.TabCount == 1)
+
+        {
+            insertAtIndex = 1;
+        }
+        else
+        {
+            insertAtIndex = base.TabCount;
+        }
+        base.TabPages.Insert(insertAtIndex, newPage);
+
+
+        base.SelectedIndex = insertAtIndex;
+    }*/
+
+    public Scintilla GetWorkingTextEditor()
 	{
 		if (base.SelectedTab.Controls.Count == 0)
 		{

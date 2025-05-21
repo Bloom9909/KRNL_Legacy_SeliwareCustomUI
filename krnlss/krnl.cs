@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
@@ -16,9 +16,11 @@ using Microsoft.Win32;
 using ScintillaNET;
 using SeliwareAPI;
 using SirhurtUI.Controls;
+using Microsoft.Web.WebView2;
+using Microsoft.Web.WebView2.WinForms;
+using Microsoft.Web.WebView2.Core;
 
 namespace krnlss;
-
 
 public class krnl : Form
 {
@@ -96,10 +98,6 @@ public class krnl : Form
 
 	public ContextMenuStrip TabContextMenu;
 
-	public CustomTabControl customTabControl1;
-
-	private TabPage tabPage1;
-
 	private TreeView ScriptView;
 
 	private BunifuFlatButton bunifuFlatButton1;
@@ -112,9 +110,9 @@ public class krnl : Form
 
 	public BunifuFlatButton bunifuFlatButton5;
 
-	private ContextMenuStrip contextMenuStrip1;
+    private ContextMenuStrip contextMenuStrip1;
 
-	private ToolStripMenuItem executeToolStripMenuItem;
+    private ToolStripMenuItem executeToolStripMenuItem;
 
 	private ToolStripMenuItem loadIntoEditorToolStripMenuItem;
 
@@ -176,9 +174,9 @@ public class krnl : Form
 
 	private ToolStripMenuItem toolStripMenuItem8;
 
-	private ToolStripMenuItem renameToolStripMenuItem;
+    private ToolStripMenuItem renameToolStripMenuItem;
 
-	private bool mMouseDown;
+    private bool mMouseDown;
 
 	private const int SW_HIDE = 0;
 
@@ -203,8 +201,8 @@ public class krnl : Form
 	private bool widthUnchanged = true;
 
 	private ToolStripMenuItem cMDXToolStripMenuItem;
-
-	private bool Anim_ATF_break;
+    private Microsoft.Web.WebView2.WinForms.WebView2 monacoEditor;
+    private bool Anim_ATF_break;
 
 	[DllImport("user32.dll", SetLastError = true)]
 	internal static extern IntPtr FindWindowA(string lpClassName, string lpWindowName);
@@ -221,10 +219,12 @@ public class krnl : Form
 	[DllImport("kernel32.dll")]
 	private static extern IntPtr GetConsoleWindow();
 
-	[DllImport("user32.dll")]
-	private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+    [DllImport("user32.dll")]
+    private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 
-	public void PopulateTree(dynamic dir, TreeNode node)
+    private WebView2 webView21;
+
+    public void PopulateTree(dynamic dir, TreeNode node)
 	{
 		try
 		{
@@ -281,7 +281,6 @@ public class krnl : Form
 		AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 		InitializeComponent();
 		panel3.Width = base.Width;
-		CustomTabControl.Form1 = this;
 	}
 
 	private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
@@ -301,9 +300,12 @@ public class krnl : Form
 		}
 	}
 
-	private void Form1_Load(object sender, EventArgs e)
-	{
-		for (int i = 0; i < hotScriptsToolStripMenuItem.DropDownItems.Count; i++)
+	private async void Form1_Load(object sender, EventArgs e)
+    {
+        Seliware.Initialize();
+        Injector.webView2 = this.webView21;
+        LoadHtmlFile();
+        for (int i = 0; i < hotScriptsToolStripMenuItem.DropDownItems.Count; i++)
 		{
 			ToolStripItem toolStripItem = hotScriptsToolStripMenuItem.DropDownItems[i];
 			if (toolStripItem.Text == "Owl Hub" || toolStripItem.Text == "Galaxy Hub")
@@ -316,33 +318,6 @@ public class krnl : Form
 		{
 			Directory.CreateDirectory("bin/tabs");
 		}
-		if (Directory.GetFiles("bin/tabs").Length != 0)
-		{
-			for (int j = 0; j < Directory.GetFiles("bin/tabs").Length / 2; j++)
-			{
-				customTabControl1.addnewtab();
-				try
-				{
-					using (FileStream stream = new FileStream($"bin/tabs/{j}_name.txt", FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-					{
-						using StreamReader streamReader = new StreamReader(stream, Encoding.UTF8);
-						customTabControl1.TabPages[customTabControl1.TabPages.Count - 2].Text = Program.db64(streamReader.ReadToEnd());
-						streamReader.Close();
-					}
-					using FileStream stream2 = new FileStream($"bin/tabs/{j}_source.lua", FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-					using StreamReader streamReader2 = new StreamReader(stream2, Encoding.UTF8);
-					customTabControl1.GetWorkingTextEditor().Text = Program.db64(streamReader2.ReadToEnd());
-					streamReader2.Close();
-				}
-				catch
-				{
-				}
-			}
-		}
-		else
-		{
-			customTabControl1.addnewtab();
-		}
 		if (!Directory.Exists(Settings.Default.ScriptPath))
 		{
 			Settings.Default.ScriptPath = Environment.CurrentDirectory + "\\scripts";
@@ -353,38 +328,23 @@ public class krnl : Form
 		anim_AwaitingTaskFinish();
 	}
 
-	private async void button1_Click(object sender, EventArgs e)
+    private async void LoadHtmlFile()
+    {
+        // Путь к HTML, лежащему рядом с exe
+        string fileName = "Monaco\\Monaco.html";
+        string fullPath = Path.Combine(Application.StartupPath, fileName);
+
+        // Важно: для локальных файлов использовать file:///
+        string uri = new Uri(fullPath).AbsoluteUri;
+
+        // Инициализируем WebView2
+        await webView21.EnsureCoreWebView2Async();
+
+        // Загружаем локальный файл
+        webView21.CoreWebView2.Navigate(uri);
+    }
+    private async void button1_Click(object sender, EventArgs e)
 	{
-		while (base.Opacity > 0.0)
-		{
-			await Task.Delay(10);
-			base.Opacity -= 0.1;
-		}
-		try
-		{
-			string[] files = Directory.GetFiles("bin/tabs");
-			for (int i = 0; i < ((files.Length != 0) ? (files.Length / 2) : 0); i++)
-			{
-				if (customTabControl1.TabPages.Count <= i + 1)
-				{
-					File.Delete($"bin/tabs/{i}_name.txt");
-					File.Delete($"bin/tabs/{i}_source.lua");
-				}
-			}
-			for (int j = 0; j < customTabControl1.TabPages.Count; j++)
-			{
-				TabPage tabPage = customTabControl1.TabPages[j];
-				if (tabPage.Controls.Count > 0)
-				{
-					Scintilla scintilla = tabPage.Controls[0] as Scintilla;
-					File.WriteAllText($"bin/tabs/{j}_name.txt", tabPage.Text.ToString());
-					File.WriteAllText($"bin/tabs/{j}_source.lua", Program.eb64(scintilla.Text.ToString()));
-				}
-			}
-		}
-		catch
-		{
-		}
 		Environment.Exit(Environment.ExitCode);
 	}
 
@@ -412,53 +372,71 @@ public class krnl : Form
 
 	private void closeToolStripMenuItem_Click(object sender, EventArgs e)
 	{
-		TabPage contextTab = customTabControl1.contextTab;
-		customTabControl1.CloseTab(contextTab);
 	}
 
 	private void clearToolStripMenuItem_Click(object sender, EventArgs e)
 	{
-		Scintilla obj = customTabControl1.contextTab.Controls[0] as Scintilla;
-		obj.Text = "";
-		obj.Refresh();
 	}
 
 	private void openIntoToolStripMenuItem_Click(object sender, EventArgs e)
 	{
-		TabPage contextTab = customTabControl1.contextTab;
-		if (contextTab == null)
-		{
-			throw new Exception("SELECTED TAB NOT FOUND");
-		}
-		using OpenFileDialog openFileDialog = new OpenFileDialog();
-		openFileDialog.CheckFileExists = true;
-		openFileDialog.Filter = "Script Files (*.txt, *.lua)|*.txt;*.lua|All Files (*.*)|*.*";
-		openFileDialog.RestoreDirectory = true;
-		if (openFileDialog.ShowDialog() == DialogResult.OK)
-		{
-			contextTab.Text = Path.GetFileNameWithoutExtension(openFileDialog.SafeFileName);
-			dynamic val = File.ReadAllText(openFileDialog.FileName);
-			Scintilla obj = contextTab.Controls[0] as Scintilla;
-			obj.Text = val;
-			obj.Refresh();
-		}
 	}
 
 	private void saveToolStripMenuItem_Click(object sender, EventArgs e)
 	{
-		TabPage contextTab = customTabControl1.contextTab;
-		if (contextTab == null)
+	}
+
+	[DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+	private static extern bool WaitNamedPipe(string name, int timeout);
+
+	private static bool findpipe(string pipeName)
+	{
+		if (!WaitNamedPipe(Path.GetFullPath("\\\\.\\pipe\\" + pipeName), 0) && (Marshal.GetLastWin32Error() == 0 || Marshal.GetLastWin32Error() == 2))
 		{
-			throw new Exception("TAB NOT FOUND");
+			return false;
 		}
-		contextTab.Text = customTabControl1.OpenSaveDialog(contextTab, contextTab.Controls[0].Text);
+		return true;
+	}
+
+	public static void pipeshit(string script)
+	{
+		try
+		{
+			if (findpipe("krnlpipe"))
+			{
+				using (NamedPipeClientStream namedPipeClientStream = new NamedPipeClientStream(".", "krnlpipe", PipeDirection.Out))
+				{
+					namedPipeClientStream.Connect();
+					if (!namedPipeClientStream.IsConnected)
+					{
+						throw new IOException("Failed To Connect To Pipe....");
+					}
+					StreamWriter streamWriter = new StreamWriter(namedPipeClientStream, Encoding.Default, 999999);
+					streamWriter.Write(script);
+					streamWriter.Dispose();
+					return;
+				}
+			}
+			MessageBox.Show(new Form
+			{
+				TopMost = true
+			}, "Please Inject To Execute Scripts", "krnl");
+		}
+		catch (Exception)
+		{
+		}
+	}
+
+	public static void Pipe(string script)
+	{
+		Program.execute_script(script);
 	}
 
 	private void bunifuFlatButton1_Click(object sender, EventArgs e)
 	{
 		try
 		{
-            Injector.run_script();
+			Injector.run_script();
 		}
 		catch (Exception ex)
 		{
@@ -468,20 +446,56 @@ public class krnl : Form
 
 	private void bunifuFlatButton2_Click(object sender, EventArgs e)
 	{
-		customTabControl1.GetWorkingTextEditor().Text = "";
-	}
+        webView21.CoreWebView2.ExecuteScriptAsync("monaco.editor.getModels()[0].setValue('');");
+    }
 
 	private void bunifuFlatButton3_Click(object sender, EventArgs e)
 	{
-		customTabControl1.OpenFileDialog(customTabControl1.SelectedTab);
-	}
+        using (OpenFileDialog openFileDialog = new OpenFileDialog())
+        {
+            openFileDialog.Filter = "Text Files (*.txt)|*.txt";
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                string fileContent = File.ReadAllText(openFileDialog.FileName);
 
-	private void bunifuFlatButton4_Click(object sender, EventArgs e)
+                // Экранируем строку для JavaScript
+                string escaped = fileContent
+                    .Replace("\\", "\\\\")
+                    .Replace("\"", "\\\"")
+                    .Replace("\r", "")
+                    .Replace("\n", "\\n");
+
+                string jsCode = $@"
+                let model = monaco.editor.getModels()[0];
+                model.setValue(""{escaped}"");
+                monaco.editor.setModelLanguage(model, 'lua');
+            ";
+
+                if (webView21.CoreWebView2 != null)
+                {
+                   webView21.CoreWebView2.ExecuteScriptAsync(jsCode);
+                }
+            }
+        }
+    }
+
+	private async void bunifuFlatButton4_Click(object sender, EventArgs e)
 	{
-		ScriptView.Nodes.Clear();
-		ScriptLoading();
-		customTabControl1.OpenSaveDialog(customTabControl1.SelectedTab, customTabControl1.GetWorkingTextEditor().Text);
-	}
+        string jsonResult = await webView21.CoreWebView2.ExecuteScriptAsync("editor.getValue();");
+        string content = System.Text.Json.JsonSerializer.Deserialize<string>(jsonResult);
+
+        // Сохраняем
+        using (SaveFileDialog saveFileDialog = new SaveFileDialog())
+        {
+            saveFileDialog.Filter = " files (*.txt)|*.txt";
+            saveFileDialog.DefaultExt = "txt";
+
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                File.WriteAllText(saveFileDialog.FileName, content);
+            }
+        }
+    }
 
 	private void injectToolStripMenuItem_Click(object sender, EventArgs e)
 	{
@@ -498,7 +512,7 @@ public class krnl : Form
 		{
 			dynamic fullPath = ScriptView.SelectedNode.FullPath;
 			dynamic val = File.ReadAllText(Settings.Default.ScriptPath + "//" + fullPath);
-            Seliware.Execute(val);
+			Pipe(val);
 		}
 		catch
 		{
@@ -511,7 +525,6 @@ public class krnl : Form
 		{
 			dynamic fullPath = ScriptView.SelectedNode.FullPath;
 			dynamic val = File.ReadAllText(Settings.Default.ScriptPath + "//" + fullPath);
-			customTabControl1.GetWorkingTextEditor().Text = val;
 		}
 		catch (Exception)
 		{
@@ -573,7 +586,7 @@ public class krnl : Form
 
 	private void openGuiToolStripMenuItem_Click(object sender, EventArgs e)
 	{
-        Seliware.Execute("loadstring(game:HttpGet('https://pastebin.com/raw/UXmbai5q', true))()");
+		Seliware.Execute("loadstring(game:HttpGet('https://pastebin.com/raw/UXmbai5q', true))()");
 	}
 
 	private void toolStripMenuItem1_Click(object sender, EventArgs e)
@@ -583,7 +596,7 @@ public class krnl : Form
 
 	private void toolStripMenuItem2_Click(object sender, EventArgs e)
 	{
-		Seliware.Execute("loadstring(game:HttpGet('https://raw.githubusercontent.com/Babyhamsta/RBLX_Scripts/main/Universal/BypassedDarkDexV3.lua', true))()");
+        Seliware.Execute("loadstring(game:HttpGet('https://raw.githubusercontent.com/Babyhamsta/RBLX_Scripts/main/Universal/BypassedDarkDexV3.lua', true))()");
 	}
 
 	private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -633,7 +646,7 @@ public class krnl : Form
 
 	private void killRobloxToolStripMenuItem_Click(object sender, EventArgs e)
 	{
-		Process[] processesByName = Process.GetProcessesByName("RobloxPlayerBeta");
+		Process[] processesByName = Process.GetProcessesByName("Windows10Universal");
 		int num = 0;
 		for (int i = 0; i < processesByName.Length; i++)
 		{
@@ -645,33 +658,6 @@ public class krnl : Form
 
 	private void krnl_FormClosing(object sender, FormClosingEventArgs e)
 	{
-		TabPage tabPage = null;
-		Scintilla scintilla = null;
-		try
-		{
-			string[] files = Directory.GetFiles("bin/tabs");
-			for (int i = 0; i < ((files.Length != 0) ? (files.Length / 2) : 0); i++)
-			{
-				if (customTabControl1.TabPages.Count <= i + 1)
-				{
-					File.Delete($"bin/tabs/{i}_name.txt");
-					File.Delete($"bin/tabs/{i}_source.lua");
-				}
-			}
-			for (int j = 0; j < customTabControl1.TabPages.Count; j++)
-			{
-				tabPage = customTabControl1.TabPages[j];
-				if (tabPage.Controls.Count > 0)
-				{
-					scintilla = tabPage.Controls[0] as Scintilla;
-					File.WriteAllText($"bin/tabs/{j}_name.txt", tabPage.Text.ToString());
-					File.WriteAllText($"bin/tabs/{j}_source.lua", Program.eb64(scintilla.Text.ToString()));
-				}
-			}
-		}
-		catch
-		{
-		}
 		Environment.Exit(Environment.ExitCode);
 	}
 
@@ -709,12 +695,12 @@ public class krnl : Form
 
 	private void gameSenseToolStripMenuItem_Click(object sender, EventArgs e)
 	{
-		Seliware.Execute("loadstring(game:HttpGet('https://pastebin.com/raw/rPnPiYZV'))();");
+        Seliware.Execute("loadstring(game:HttpGet('https://pastebin.com/raw/rPnPiYZV'))();");
 	}
 
 	private void remoteSpyToolStripMenuItem_Click(object sender, EventArgs e)
 	{
-		Seliware.Execute("loadstring(game:HttpGet('https://pastebin.com/raw/JZaJe9Sg'))();");
+        Seliware.Execute("loadstring(game:HttpGet(\"https://raw.githubusercontent.com/infyiff/backup/main/SimpleSpyV3/main.lua\"))()");
 	}
 
 	protected override void Dispose(bool disposing)
@@ -729,6 +715,8 @@ public class krnl : Form
 	private void InitializeComponent()
 	{
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(krnl));
+            this.webView21 = new Microsoft.Web.WebView2.WinForms.WebView2();
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel3 = new System.Windows.Forms.Panel();
             this.button2 = new System.Windows.Forms.Button();
@@ -776,7 +764,7 @@ public class krnl : Form
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.panel2 = new System.Windows.Forms.Panel();
             this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
-            this.tabPage1 = new System.Windows.Forms.TabPage();
+            ((System.ComponentModel.ISupportInitialize)(this.webView21)).BeginInit();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.TabContextMenu.SuspendLayout();
@@ -784,6 +772,18 @@ public class krnl : Form
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
             this.SuspendLayout();
+            // 
+            // webView21
+            // 
+            this.webView21.AllowExternalDrop = true;
+            this.webView21.CreationProperties = null;
+            this.webView21.DefaultBackgroundColor = System.Drawing.Color.White;
+            this.webView21.Location = new System.Drawing.Point(4, 60);
+            this.webView21.Name = "webView21";
+            this.webView21.Size = new System.Drawing.Size(570, 259);
+            this.webView21.TabIndex = 14;
+            this.webView21.ZoomFactor = 1D;
+            this.webView21.Click += new System.EventHandler(this.webView21_Click);
             // 
             // panel1
             // 
@@ -797,7 +797,7 @@ public class krnl : Form
             this.panel1.Controls.Add(this.label1);
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(690, 30);
+            this.panel1.Size = new System.Drawing.Size(690, 33);
             this.panel1.TabIndex = 0;
             this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
             this.panel1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseMove);
@@ -822,10 +822,11 @@ public class krnl : Form
             this.button2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.button2.Font = new System.Drawing.Font("Corbel", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.button2.ForeColor = System.Drawing.Color.White;
-            this.button2.Location = new System.Drawing.Point(620, -1);
+            this.button2.Location = new System.Drawing.Point(620, 0);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(35, 33);
             this.button2.TabIndex = 4;
+            this.button2.Text = "—";
             this.button2.UseVisualStyleBackColor = false;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
@@ -835,21 +836,23 @@ public class krnl : Form
             this.button1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(29)))), ((int)(((byte)(29)))), ((int)(((byte)(29)))));
             this.button1.FlatAppearance.BorderSize = 0;
             this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button1.Font = new System.Drawing.Font("Corbel", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button1.Font = new System.Drawing.Font("Corbel", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.button1.ForeColor = System.Drawing.Color.White;
-            this.button1.Location = new System.Drawing.Point(655, -1);
+            this.button1.Location = new System.Drawing.Point(655, 0);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(35, 33);
             this.button1.TabIndex = 3;
+            this.button1.Text = "✕";
             this.button1.UseVisualStyleBackColor = false;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             this.button1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.krnl_MouseMove);
             // 
             // pictureBox1
             // 
-            this.pictureBox1.Location = new System.Drawing.Point(4, 4);
+            this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
+            this.pictureBox1.Location = new System.Drawing.Point(4, 3);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(25, 25);
+            this.pictureBox1.Size = new System.Drawing.Size(28, 26);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 1;
             this.pictureBox1.TabStop = false;
@@ -860,11 +863,12 @@ public class krnl : Form
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.ForeColor = System.Drawing.Color.White;
-            this.label1.Location = new System.Drawing.Point(328, 6);
+            this.label1.Location = new System.Drawing.Point(328, 7);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(45, 20);
             this.label1.TabIndex = 0;
             this.label1.Text = "KRNL";
+            this.label1.Click += new System.EventHandler(this.label1_Click);
             this.label1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseMove);
             // 
             // TabContextMenu
@@ -905,7 +909,6 @@ public class krnl : Form
             this.renameToolStripMenuItem.Name = "renameToolStripMenuItem";
             this.renameToolStripMenuItem.Size = new System.Drawing.Size(127, 22);
             this.renameToolStripMenuItem.Text = "Rename";
-            this.renameToolStripMenuItem.Click += new System.EventHandler(this.renameToolStripMenuItem_Click_1);
             // 
             // ScriptView
             // 
@@ -918,7 +921,7 @@ public class krnl : Form
             this.ScriptView.ForeColor = System.Drawing.Color.White;
             this.ScriptView.HideSelection = false;
             this.ScriptView.LineColor = System.Drawing.Color.White;
-            this.ScriptView.Location = new System.Drawing.Point(565, 59);
+            this.ScriptView.Location = new System.Drawing.Point(571, 59);
             this.ScriptView.Name = "ScriptView";
             this.ScriptView.Size = new System.Drawing.Size(121, 259);
             this.ScriptView.TabIndex = 4;
@@ -1247,7 +1250,7 @@ public class krnl : Form
             this.injectToolStripMenuItem.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(33)))), ((int)(((byte)(33)))));
             this.injectToolStripMenuItem.ForeColor = System.Drawing.Color.White;
             this.injectToolStripMenuItem.Name = "injectToolStripMenuItem";
-            this.injectToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.injectToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
             this.injectToolStripMenuItem.Text = "Inject";
             this.injectToolStripMenuItem.Click += new System.EventHandler(this.injectToolStripMenuItem_Click_1);
             // 
@@ -1256,7 +1259,7 @@ public class krnl : Form
             this.killRobloxToolStripMenuItem.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(33)))), ((int)(((byte)(33)))));
             this.killRobloxToolStripMenuItem.ForeColor = System.Drawing.Color.White;
             this.killRobloxToolStripMenuItem.Name = "killRobloxToolStripMenuItem";
-            this.killRobloxToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.killRobloxToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
             this.killRobloxToolStripMenuItem.Text = "Kill Roblox";
             this.killRobloxToolStripMenuItem.Click += new System.EventHandler(this.killRobloxToolStripMenuItem_Click);
             // 
@@ -1424,21 +1427,13 @@ public class krnl : Form
             // 
             this.errorProvider1.ContainerControl = this;
             // 
-            // tabPage1
-            // 
-            this.tabPage1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(36)))), ((int)(((byte)(36)))));
-            this.tabPage1.Location = new System.Drawing.Point(4, 20);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Size = new System.Drawing.Size(548, 235);
-            this.tabPage1.TabIndex = 0;
-            this.tabPage1.Click += new System.EventHandler(this.tabPage1_Click);
-            // 
             // krnl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(18)))), ((int)(((byte)(18)))), ((int)(((byte)(18)))));
             this.ClientSize = new System.Drawing.Size(690, 350);
+            this.Controls.Add(this.webView21);
             this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.ScriptView);
             this.Controls.Add(this.panel1);
@@ -1450,6 +1445,7 @@ public class krnl : Form
             this.Controls.Add(this.bunifuFlatButton1);
             this.Controls.Add(this.bunifuFlatButton6);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "krnl";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "krnl";
@@ -1461,6 +1457,7 @@ public class krnl : Form
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.krnl_MouseDown);
             this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.krnl_MouseMove);
             this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.krnl_MouseUp);
+            ((System.ComponentModel.ISupportInitialize)(this.webView21)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
@@ -1479,7 +1476,7 @@ public class krnl : Form
         Seliware.Execute("loadstring(game:HttpGet('https://raw.githubusercontent.com/ic3w0lf22/Unnamed-ESP/master/UnnamedESP.lua', true))()");
 	}
 
-	private void timer1_Tick(object sender, EventArgs e)
+	private async void timer1_Tick(object sender, EventArgs e)
 	{
 		if (Settings.Default.remove_crash_logs)
 		{
@@ -1500,8 +1497,14 @@ public class krnl : Form
 		}
 		if ((Settings.Default.autoinject ? true : false) && !Program.attached && Process.GetProcessesByName("RobloxPlayerBeta").Length != 0 && File.Exists(Program.dll_path) && File.Exists(Program.injector_path))
 		{
-			Program.attached = true;
-			Injector.SeliwareInjection();
+			bool status = Injector.inject_status();
+			if (status == false)
+			{
+				Injector.SeliwareInjection();
+				await Task.Delay(3000);
+				Injector.inject_status();
+			}
+
 		}
 	}
 
@@ -1527,15 +1530,21 @@ public class krnl : Form
 
 	private void pictureBox2_MouseClick(object sender, MouseEventArgs e)
 	{
-		Process.Start("https://" + Program.domain + "/invite");
+		Process.Start("https://discord.gg/8v6cETPera");
 	}
 
 	private void bunifuFlatButton8_Click(object sender, EventArgs e)
 	{
-		MessageBox.Show("Seliware is paid", "Krnl", 0);
-	}
+		MessageBox.Show(new Form
+		{
+			TopMost = true
+		}, "Seliware is paid", "KRNL");
 
-	private void toolStripMenuItem7_Click(object sender, EventArgs e)
+        Task.Delay(3000);
+        Process.Start("https://www.upio.dev/seliware/resellers");
+    }
+
+    private void toolStripMenuItem7_Click(object sender, EventArgs e)
 	{
 		Process.Start("https://discord.gg/8v6cETPera");
 	}
@@ -1675,66 +1684,37 @@ public class krnl : Form
 
 	private void toolStripMenuItem8_Click(object sender, EventArgs e)
 	{
-		Seliware.Execute("loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()");
+        Seliware.Execute("loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()");
 	}
 
-	private void renameToolStripMenuItem_Click_1(object sender, EventArgs e)
-	{
-		TabPage contextTab = customTabControl1.contextTab;
-		if (contextTab != null)
-		{
-			Form prompt = new Form
-			{
-				Width = 200,
-				Height = 50,
-				MinimumSize = new Size(200, 50),
-				MaximumSize = new Size(200, 50),
-				FormBorderStyle = FormBorderStyle.None,
-				Text = "What do you want to rename this tab to?",
-				StartPosition = FormStartPosition.CenterParent
-			};
-			Label value = new Label
-			{
-				Width = 200,
-				Height = 50,
-				Text = "What do you want to rename this tab to?",
-				Top = 0,
-				Left = 0
-			};
-			TextBox textBox = new TextBox
-			{
-				Left = 0,
-				Top = 30,
-				Width = 150,
-				Text = contextTab.Text
-			};
-			Button button = new Button
-			{
-				Text = "Ok",
-				Left = 150,
-				Width = 50,
-				Top = 30,
-				DialogResult = DialogResult.OK
-			};
-			prompt.TopMost = true;
-			button.Click += delegate
-			{
-				prompt.Close();
-			};
-			prompt.Controls.Add(textBox);
-			prompt.Controls.Add(button);
-			prompt.Controls.Add(value);
-			prompt.AcceptButton = button;
-			string text = ((prompt.ShowDialog() == DialogResult.OK) ? textBox.Text : "");
-			if (text.Length > 0)
-			{
-				contextTab.Text = text;
-			}
-		}
-	}
 
 	private void cMDXToolStripMenuItem_Click(object sender, EventArgs e)
 	{
-		Seliware.Execute("loadstring(game:HttpGet('https://raw.githubusercontent.com/CMD-X/CMD-X/master/Source', true))()");
+        Seliware.Execute("loadstring(game:HttpGet('https://raw.githubusercontent.com/CMD-X/CMD-X/master/Source', true))()");
 	}
+
+    private void textBox1_TextChanged(object sender, EventArgs e)
+    {
+
+    }
+
+    private void richTextBox2_TextChanged(object sender, EventArgs e)
+    {
+
+    }
+
+    private void label1_Click(object sender, EventArgs e)
+    {
+
+    }
+
+    private void label2_Click(object sender, EventArgs e)
+    {
+		Process.Start("https://seliware.com");
+    }
+
+    private void webView21_Click(object sender, EventArgs e)
+    {
+
+    }
 }

@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Bunifu.Framework.UI;
+using Controls;
 using krnlss.Properties;
 using ToggleSlider;
 
@@ -22,9 +23,11 @@ public class settings : Form
 
 	private IContainer components;
 
-	private Panel panel1;
+    private Panel panel1;
 
-	private BunifuCustomLabel bunifuCustomLabel1;
+    private CustomTabControl customTabControl1; 
+
+    private BunifuCustomLabel bunifuCustomLabel1;
 
 	private BunifuCustomLabel bunifuCustomLabel2;
 
@@ -224,7 +227,7 @@ public class settings : Form
 	}
 
 	private void InitializeComponent()
-	{
+    {
             this.components = new System.ComponentModel.Container();
             this.panel1 = new System.Windows.Forms.Panel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
@@ -239,6 +242,11 @@ public class settings : Form
             this.button1 = new System.Windows.Forms.Button();
             this.bunifuCustomLabel5 = new Bunifu.Framework.UI.BunifuCustomLabel();
             this.bunifuCustomLabel6 = new Bunifu.Framework.UI.BunifuCustomLabel();
+            this.toggleSliderComponent5 = new ToggleSlider.ToggleSliderComponent();
+            this.toggleSliderComponent4 = new ToggleSlider.ToggleSliderComponent();
+            this.toggleSliderComponent3 = new ToggleSlider.ToggleSliderComponent();
+            this.toggleSliderComponent2 = new ToggleSlider.ToggleSliderComponent();
+            this.toggleSliderComponent1 = new ToggleSlider.ToggleSliderComponent();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -331,7 +339,6 @@ public class settings : Form
             this.bunifuCustomLabel2.Size = new System.Drawing.Size(75, 17);
             this.bunifuCustomLabel2.TabIndex = 17;
             this.bunifuCustomLabel2.Text = "Auto Attach";
-            this.bunifuCustomLabel2.Click += new System.EventHandler(this.bunifuCustomLabel2_Click);
             // 
             // bunifuElipse1
             // 
@@ -394,10 +401,85 @@ public class settings : Form
             this.bunifuCustomLabel6.ForeColor = System.Drawing.Color.White;
             this.bunifuCustomLabel6.Location = new System.Drawing.Point(12, 163);
             this.bunifuCustomLabel6.Name = "bunifuCustomLabel6";
-            this.bunifuCustomLabel6.Size = new System.Drawing.Size(100, 17);
+            this.bunifuCustomLabel6.Size = new System.Drawing.Size(79, 17);
             this.bunifuCustomLabel6.TabIndex = 15;
-            this.bunifuCustomLabel6.Text = "Toggle Monaco";
+            this.bunifuCustomLabel6.Text = "Toggle Tabs";
             this.bunifuCustomLabel6.Click += new System.EventHandler(this.bunifuCustomLabel6_Click);
+            // 
+            // toggleSliderComponent5
+            // 
+            this.toggleSliderComponent5.AutoSize = true;
+            this.toggleSliderComponent5.Checked = false;
+            this.toggleSliderComponent5.Location = new System.Drawing.Point(187, 163);
+            this.toggleSliderComponent5.Margin = new System.Windows.Forms.Padding(4);
+            this.toggleSliderComponent5.Name = "toggleSliderComponent5";
+            this.toggleSliderComponent5.Size = new System.Drawing.Size(54, 21);
+            this.toggleSliderComponent5.TabIndex = 20;
+            this.toggleSliderComponent5.ToggleBarText = "";
+            this.toggleSliderComponent5.ToggleCircleColor = System.Drawing.Color.FromArgb(((int)(((byte)(91)))), ((int)(((byte)(91)))), ((int)(((byte)(91)))));
+            this.toggleSliderComponent5.ToggleColorBar = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(35)))));
+            this.toggleSliderComponent5.CheckChanged += new System.EventHandler(this.toggleSliderComponent5_CheckChanged);
+            this.toggleSliderComponent5.Load += new System.EventHandler(this.toggleSliderComponent5_Load);
+            // 
+            // toggleSliderComponent4
+            // 
+            this.toggleSliderComponent4.AutoSize = true;
+            this.toggleSliderComponent4.Checked = false;
+            this.toggleSliderComponent4.Location = new System.Drawing.Point(187, 134);
+            this.toggleSliderComponent4.Margin = new System.Windows.Forms.Padding(4);
+            this.toggleSliderComponent4.Name = "toggleSliderComponent4";
+            this.toggleSliderComponent4.Size = new System.Drawing.Size(54, 21);
+            this.toggleSliderComponent4.TabIndex = 20;
+            this.toggleSliderComponent4.ToggleBarText = "";
+            this.toggleSliderComponent4.ToggleCircleColor = System.Drawing.Color.FromArgb(((int)(((byte)(91)))), ((int)(((byte)(91)))), ((int)(((byte)(91)))));
+            this.toggleSliderComponent4.ToggleColorBar = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(35)))));
+            this.toggleSliderComponent4.CheckChanged += new System.EventHandler(this.toggleSliderComponent4_CheckChanged);
+            this.toggleSliderComponent4.Load += new System.EventHandler(this.toggleSliderComponent4_Load);
+            // 
+            // toggleSliderComponent3
+            // 
+            this.toggleSliderComponent3.AutoSize = true;
+            this.toggleSliderComponent3.Checked = false;
+            this.toggleSliderComponent3.Location = new System.Drawing.Point(187, 108);
+            this.toggleSliderComponent3.Margin = new System.Windows.Forms.Padding(4);
+            this.toggleSliderComponent3.Name = "toggleSliderComponent3";
+            this.toggleSliderComponent3.Size = new System.Drawing.Size(54, 21);
+            this.toggleSliderComponent3.TabIndex = 20;
+            this.toggleSliderComponent3.ToggleBarText = "";
+            this.toggleSliderComponent3.ToggleCircleColor = System.Drawing.Color.FromArgb(((int)(((byte)(91)))), ((int)(((byte)(91)))), ((int)(((byte)(91)))));
+            this.toggleSliderComponent3.ToggleColorBar = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(35)))));
+            this.toggleSliderComponent3.CheckChanged += new System.EventHandler(this.toggleSliderComponent3_CheckChanged);
+            this.toggleSliderComponent3.Load += new System.EventHandler(this.toggleSliderComponent3_Load);
+            // 
+            // toggleSliderComponent2
+            // 
+            this.toggleSliderComponent2.AutoSize = true;
+            this.toggleSliderComponent2.Checked = false;
+            this.toggleSliderComponent2.Location = new System.Drawing.Point(187, 81);
+            this.toggleSliderComponent2.Margin = new System.Windows.Forms.Padding(4);
+            this.toggleSliderComponent2.Name = "toggleSliderComponent2";
+            this.toggleSliderComponent2.Size = new System.Drawing.Size(54, 21);
+            this.toggleSliderComponent2.TabIndex = 20;
+            this.toggleSliderComponent2.ToggleBarText = "";
+            this.toggleSliderComponent2.ToggleCircleColor = System.Drawing.Color.FromArgb(((int)(((byte)(91)))), ((int)(((byte)(91)))), ((int)(((byte)(91)))));
+            this.toggleSliderComponent2.ToggleColorBar = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(35)))));
+            this.toggleSliderComponent2.CheckChanged += new System.EventHandler(this.toggleSliderComponent2_CheckChanged);
+            this.toggleSliderComponent2.Load += new System.EventHandler(this.toggleSliderComponent2_Load);
+            // 
+            // toggleSliderComponent1
+            // 
+            this.toggleSliderComponent1.AutoSize = true;
+            this.toggleSliderComponent1.Checked = false;
+            this.toggleSliderComponent1.Location = new System.Drawing.Point(187, 55);
+            this.toggleSliderComponent1.Margin = new System.Windows.Forms.Padding(4);
+            this.toggleSliderComponent1.Name = "toggleSliderComponent1";
+            this.toggleSliderComponent1.Size = new System.Drawing.Size(54, 21);
+            this.toggleSliderComponent1.TabIndex = 19;
+            this.toggleSliderComponent1.ToggleBarText = "";
+            this.toggleSliderComponent1.ToggleCircleColor = System.Drawing.Color.FromArgb(((int)(((byte)(91)))), ((int)(((byte)(91)))), ((int)(((byte)(91)))));
+            this.toggleSliderComponent1.ToggleColorBar = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(35)))), ((int)(((byte)(35)))));
+            this.toggleSliderComponent1.CheckChanged += new System.EventHandler(this.toggleSliderComponent1_CheckChanged);
+            this.toggleSliderComponent1.Load += new System.EventHandler(this.toggleSliderComponent1_Load);
             // 
             // settings
             // 
@@ -405,6 +487,11 @@ public class settings : Form
             this.ClientSize = new System.Drawing.Size(248, 230);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.bunifuCustomLabel4);
+            this.Controls.Add(this.toggleSliderComponent5);
+            this.Controls.Add(this.toggleSliderComponent4);
+            this.Controls.Add(this.toggleSliderComponent3);
+            this.Controls.Add(this.toggleSliderComponent2);
+            this.Controls.Add(this.toggleSliderComponent1);
             this.Controls.Add(this.bunifuCustomLabel2);
             this.Controls.Add(this.bunifuCustomLabel6);
             this.Controls.Add(this.bunifuCustomLabel5);
@@ -451,8 +538,11 @@ public class settings : Form
 
 	private void button1_Click_2(object sender, EventArgs e)
 	{
-		MessageBox.Show("Coming Soon", "KRNL", 0);
-	}
+        MessageBox.Show(new Form
+        {
+            TopMost = true
+        }, "Coming Soon", "Krnl");
+    }
 
 	private void toggleSliderComponent4_CheckChanged(object sender, EventArgs e)
 	{
@@ -465,7 +555,7 @@ public class settings : Form
 	}
 
 	private void toggleSliderComponent5_Load(object sender, EventArgs e)
-	{
+	{   
 	}
 
 	private void toggleSliderComponent5_CheckChanged(object sender, EventArgs e)
@@ -476,16 +566,11 @@ public class settings : Form
 			MessageBox.Show(new Form
 			{
 				TopMost = true
-			}, "Monaco is disabled! Use the beta UI for Monaco instead!");
+			}, "Tabs are disabled! Use the beta UI for Tabs instead!", "KRNL", 0);
 			Settings.Default.monaco = false;
 		}
 		Settings.Default.Save();
 	}
-
-    private void bunifuCustomLabel2_Click(object sender, EventArgs e)
-    {
-
-    }
 
     private void bunifuCustomLabel6_Click(object sender, EventArgs e)
     {

@@ -1520,7 +1520,7 @@ internal class Intellisense
 				{
 					try
 					{
-                        CefSharp.WebBrowserExtensions.ExecuteScriptAsyncWhenPageLoaded((IWebBrowser)(object)chrome, "AddIntellisense('" + dictionary.Keys.ToList()[j] + "', '" + value[0] + "', '" + value[1] + "', '" + value[2] + "')", true);
+						CefSharp.WebBrowserExtensions.ExecuteScriptAsyncWhenPageLoaded((IWebBrowser)(object)chrome, "AddIntellisense('" + dictionary.Keys.ToList()[j] + "', '" + value[0] + "', '" + value[1] + "', '" + value[2] + "')", true);
 					}
 					catch
 					{

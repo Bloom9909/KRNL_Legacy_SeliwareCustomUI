@@ -17,9 +17,6 @@
     <Compile Update="krnlss\krnl.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="krnlss\krnl_monaco.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Update="krnlss\settings.cs">
       <SubType>Form</SubType>
     </Compile>

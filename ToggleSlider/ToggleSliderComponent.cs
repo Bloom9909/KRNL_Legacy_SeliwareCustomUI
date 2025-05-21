@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
+using ToggleSlider;
 
 namespace ToggleSlider;
 
@@ -28,8 +29,9 @@ public class ToggleSliderComponent : UserControl
 
 	private Timer timer1 = new Timer();
 
-	private IContainer components;
 
+	private IContainer components;
+	
 	public bool Checked
 	{
 		get
@@ -204,7 +206,8 @@ public class ToggleSliderComponent : UserControl
 
 	private void InitializeComponent()
 	{
-		base.SuspendLayout();
+		this.components = new System.ComponentModel.Container();
+        base.SuspendLayout();
 		base.AutoScaleDimensions = new System.Drawing.SizeF(8f, 16f);
 		base.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 		base.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);

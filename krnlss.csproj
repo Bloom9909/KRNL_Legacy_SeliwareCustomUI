@@ -1,10 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+  <PropertyGroup Label="Globals">
+    <WV2WinRTPlatformReferencesLevel>explicit</WV2WinRTPlatformReferencesLevel>
+  </PropertyGroup>
   <PropertyGroup>
     <AssemblyName>krnlss</AssemblyName>
     <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
     <OutputType>WinExe</OutputType>
     <UseWindowsForms>True</UseWindowsForms>
-    <TargetFramework>net48</TargetFramework>
+    <TargetFramework>net481</TargetFramework>
     <PlatformTarget>x64</PlatformTarget>
     <Platforms>x64</Platforms>
   </PropertyGroup>
@@ -17,11 +20,23 @@
     <RootNamespace />
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <StartupObject>krnlss.Program</StartupObject>
+    <Nullable>disable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="CefSharp.WinForms" Version="135.0.220" />
+    <PackageReference Include="cef.redist.x64" Version="120.2.7" />
+    <PackageReference Include="CefSharp.Common" Version="136.1.40" />
+    <PackageReference Include="CefSharp.Common.NETCore" Version="136.1.40" />
+    <PackageReference Include="CefSharp.H264.Core.x64" Version="133.4.2" />
+    <PackageReference Include="CefSharp.WinForms" Version="136.1.40" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3240.44" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.1.2" />
+    <PackageReference Include="System.Text.Json" Version="9.0.5" />
   </ItemGroup>
+	<ItemGroup>
+		<Content Include="Monaco\**">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json">
       <HintPath>Newtonsoft.Json.dll</HintPath>
@@ -31,8 +46,6 @@
     </Reference>
     <Reference Include="SeliwareAPI">
       <HintPath>SeliwareAPI.dll</HintPath>
-      <Private>true</Private>
-      <SpecificVersion>false</SpecificVersion>
     </Reference>
     <Reference Include="System.Core" />
     <Reference Include="CefSharp.WinForms" />
@@ -45,5 +58,36 @@
     <Reference Include="websocket-sharp">
       <HintPath>websocket-sharp.dll</HintPath>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="krnlResources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>krnlResources.resx</DependentUpon>
+    </Compile>
+    <Compile Update="krnlss.About.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>krnlss.About.resx</DependentUpon>
+    </Compile>
+    <Compile Update="krnlss.krnl_mocan.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>krnlss.krnl_mocan.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="krnlResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>krnlResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="krnlss.About.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>krnlss.About.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="krnlss.krnl_mocan.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>krnlss.krnl_mocan.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>

@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using CefSharp.WinForms;
 using IWshRuntimeLibrary;
 using krnlss.Properties;
 using Microsoft.Win32;
@@ -163,15 +164,14 @@ internal static class Program
 		obj.Save();
 	}
 
-	[STAThread]
+	[STAThread]// ўа покажу прогресс))
 	private static void Main()
 	{
-		Seliware.Initialize();
         Process.GetCurrentProcess().Disposed += Program_Disposed;
 		Process.GetCurrentProcess().Exited += Program_Exited;
 		AppDomain.CurrentDomain.ProcessExit += CurrentDomain_ProcessExit;
-		Console.Title = "Krnl UWP Console";
-		ConsoleFramework.Init();
+		//Console.Title = "Krnl UWP Console";
+		//ConsoleFramework.Init();
 		string text = "KRNL Workspace";
 		string[] directories = Directory.GetDirectories(Environment.GetEnvironmentVariable("LocalAppData") + "\\Packages");
 		foreach (string text2 in directories)
@@ -358,9 +358,9 @@ internal static class Program
 						test();
 						bool flag2 = !is_wrd && Settings.Default.monaco;
 						Settings.Default.monaco = flag2;
-						form = (flag2 ? ((Form)new krnl_monaco()) : ((Form)new krnl()));
+						form = (flag2 ? ((Form)new krnl()) : ((Form)new krnl()));
 						create_wrd_button();
-						auto_attach();
+						//auto_attach();
 						ConsoleFramework.TailFrom(Path.Combine(text5, "k_ipc.txt"));
 						test();
 						form.Width = 690;
@@ -374,9 +374,8 @@ internal static class Program
 					return;
 				}
 			}
-        }
-	}
-	
+		}
+    }
 
 	private static void Program_Disposed(object sender, EventArgs e)
 	{
@@ -418,7 +417,7 @@ internal static class Program
 			{
 				if (Process.GetProcessesByName("RobloxPlayerBeta").Length != 0)
 				{
-					Seliware.Inject();
+					Injector.SeliwareInjection();
 				}
 				else
 				{
@@ -426,7 +425,7 @@ internal static class Program
 					is_attached = false;
 				}
 			}
-			await Task.Delay(300);
+			await Task.Delay(3000);
 		}
 	}
 
@@ -434,10 +433,14 @@ internal static class Program
 	{
 		if (Injector.inject_status() == false)
 		{
-            MessageBox.Show(new Form
+			MessageBox.Show(new Form
 			{
 				TopMost = true
 			}, "Please inject before executing!");
+		}
+		else
+		{
+			Injector.run_script();
 		}
 	}
 
@@ -456,12 +459,12 @@ internal static class Program
 		btn.BackColor = Color.FromArgb(29, 29, 29);
 		btn.ForeColor = Color.FromArgb(200, 200, 200);
 		btn.Font = new Font("Segoe UI", 9f, FontStyle.Regular, GraphicsUnit.Point, 0);
-		btn.Text = "wearedevs.net";
+		btn.Text = "seliware.com";
 		btn.TextAlign = ContentAlignment.MiddleCenter;
 		btn.TabStop = false;
 		btn.Click += delegate
 		{
-			Process.Start("https://wearedevs.net/");
+			Process.Start("https://seliware.com/");
 			((dynamic)form).Focus();
 		};
 		Task.Run(async delegate
@@ -481,11 +484,11 @@ internal static class Program
 	{
 		bool status;
 		status = Injector.inject_status();
-		if (status)
+		if (status == false)
 		{
 			Injector.SeliwareInjection();
 		}
-		else
+		if(status == true)
 		{
 			MessageBox.Show("Seliware already injected", "KRNL", 0);
 		}
