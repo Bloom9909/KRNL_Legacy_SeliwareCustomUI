@@ -1,9 +1,28 @@
 # KRNL Legacy Custom UI
 **Made by meowbloom2 with love**
 
+KRNL Legacy v1.1
+
+Changelog:
+
+[-] Removed Tabs(With Editor, cause developers of that UI are dumbs and put it together)
+
+[+] Added Monaco
+
+[+] Added some checks(IsRobloxOpened, IsSeliwareInjected, and so on)
+
+[+] Changed "wearedevs.net" to "seliware.com"
+
+Fixes:
+
+[/] Fixed script not executing
+
+[/] Fixed all buttons(UI in now fully functional(Maybe :) ))
+
+[/] Fixed all "Null Reference Exeption"
 
 
-KRNL Legacy v 1.0
+KRNL Legacy v1.0
 
 Changelog:
 
