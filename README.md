@@ -3,7 +3,7 @@
 
 **KRNL Legacy v1.1**
 
-**Changelog:**
+   **Changelog:**
 
 [-] Removed Tabs(With Editor, cause developers of that UI are dumbs and put it together)
 
@@ -13,7 +13,7 @@
 
 [+] Changed "wearedevs.net" to "seliware.com"
 
-**Fixes:**
+   **Fixes:**
 
 [/] Fixed script not executing
 
@@ -24,13 +24,13 @@
 
 **KRNL Legacy v1.0**
 
-**Changelog:**
+  **Changelog:**
 
 [+] Fully(Maybe) rewrote injection using Seliware API
 
 [+] workspace, autoexec, ipc now in KRNL Workspace folder(use seliware workspace instead btw)
 
-**Fixes:**
+ **Fixes:**
 
 [/] Fixed "Install Roblox from Microsoft Store" error
 
