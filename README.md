@@ -34,4 +34,4 @@
 
 [/] Fixed "Install Roblox from Microsoft Store" error
 
-# If you found any errors, feel free to dm projectnormandyofficial on discord
+# If you found any errors, feel free to dm ghosttrace.dev on discord
